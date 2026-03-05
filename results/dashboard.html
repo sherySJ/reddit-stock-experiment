@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What If AI Read Every Stock Tip on Reddit?</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --card: #12121a;
+    --card-border: #1e1e2e;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --purple: #a855f7;
+    --purple-dim: #7c3aed;
+    --green: #4ade80;
+    --red: #ff6b6b;
+    --yellow: #ffd93d;
+    --blue: #6366f1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .container { max-width: 1300px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 60px 0 20px;
+  }
+  .hero h1 {
+    font-size: 2.6em;
+    font-weight: 800;
+    background: linear-gradient(135deg, #a855f7, #6366f1, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .hero .subtitle {
+    color: var(--text-muted);
+    font-size: 1.15em;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin: 40px 0;
+  }
+  .stat-box {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-box .val {
+    font-size: 1.8em;
+    font-weight: 800;
+    color: var(--purple);
+  }
+  .stat-box .label {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Sections */
+  .section {
+    margin: 60px 0;
+  }
+  .section h2 {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 8px;
+  }
+  .section .section-desc {
+    color: var(--text-muted);
+    margin-bottom: 25px;
+    font-size: 0.95em;
+  }
+
+  /* Key insight callout */
+  .insight {
+    background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(99,102,241,0.1));
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    margin: 30px 0;
+  }
+  .insight .insight-stat {
+    font-size: 3em;
+    font-weight: 900;
+    color: var(--purple);
+  }
+  .insight .insight-label {
+    font-size: 1.1em;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+
+  /* Summary cards */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 30px 0;
+  }
+  .summary-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 22px;
+    text-align: center;
+  }
+  .card-name {
+    font-size: 0.9em;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .card-return {
+    font-size: 2.2em;
+    font-weight: 800;
+  }
+  .card-detail {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .card-alpha {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* Chart */
+  .chart-container {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 30px;
+    margin: 30px 0;
+  }
+
+  /* Portfolio cards */
+  .portfolios-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .portfolio-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 25px;
+  }
+  .portfolio-card h3 {
+    font-size: 1.3em;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .portfolio-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    font-size: 0.8em;
+    color: var(--text-muted);
+  }
+  .portfolio-stats b { color: var(--text); }
+
+  /* Example cards */
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+  }
+  .example-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .example-label {
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .example-meta {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .example-body {
+    font-style: italic;
+    color: #ccc;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .example-explanation {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    border-top: 1px solid var(--card-border);
+    padding-top: 10px;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.85em;
+    font-weight: 700;
+  }
+  .badge-high { background: rgba(74,222,128,0.15); color: #4ade80; }
+  .badge-mid { background: rgba(255,217,61,0.15); color: #ffd93d; }
+  .badge-low { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85em;
+  }
+  .data-table th {
+    text-align: left;
+    padding: 10px 8px;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.85em;
+  }
+  .data-table td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(30,30,46,0.5);
+  }
+  .data-table tr:hover {
+    background: rgba(168,85,247,0.03);
+  }
+  .explanation-cell, .body-cell {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    max-width: 400px;
+  }
+
+  .table-wrapper {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 25px;
+    overflow-x: auto;
+  }
+
+  /* Histogram */
+  .hist-container {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 25px;
+    max-width: 600px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8em;
+    margin-top: 60px;
+    padding: 30px 0;
+    border-top: 1px solid var(--card-border);
+  }
+
+  @media (max-width: 900px) {
+    .stats-bar { grid-template-columns: repeat(3, 1fr); }
+    .summary-row { grid-template-columns: repeat(2, 1fr); }
+    .portfolios-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: 1.8em; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>What If AI Read Every Stock Tip on Reddit?</h1>
+    <p class="subtitle">547 stock recommendations from r/ValueInvesting, scored by AI for reasoning quality, backtested over 12 months. Which filter produces the best returns?</p>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-box"><div class="val">541</div><div class="label">Threads Scraped</div></div>
+    <div class="stat-box"><div class="val">547</div><div class="label">Recommendations</div></div>
+    <div class="stat-box"><div class="val">237</div><div class="label">Unique Tickers</div></div>
+    <div class="stat-box"><div class="val">326</div><div class="label">Authors</div></div>
+    <div class="stat-box"><div class="val">23.7</div><div class="label">Avg AI Score</div></div>
+  </div>
+
+  <!-- KEY INSIGHT -->
+  <div class="insight">
+    <div class="insight-stat">0.014</div>
+    <div class="insight-label">Correlation between Reddit upvotes and AI reasoning quality<br><em>Upvotes tell you nothing about argument quality</em></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="section">
+    <h2>The Results</h2>
+    <p class="section-desc">$10,000 equal-weight portfolios, all entered March 3, 2025. Which filter beat the market?</p>
+    <div class="summary-row">
+        <div class="summary-card" style="border-top:3px solid #ff6b6b">
+            <div class="card-name" style="color:#ff6b6b">The Crowd</div>
+            <div class="card-return" style="color:#4ade80">+39.8%</div>
+            <div class="card-detail">$10,000 → $13,977</div>
+            <div class="card-alpha">Alpha: +20.3%</div>
+        </div>
+        <div class="summary-card" style="border-top:3px solid #ffd93d">
+            <div class="card-name" style="color:#ffd93d">The Underdogs</div>
+            <div class="card-return" style="color:#4ade80">+10.4%</div>
+            <div class="card-detail">$10,000 → $11,038</div>
+            <div class="card-alpha">Alpha: -9.1%</div>
+        </div>
+        <div class="summary-card" style="border-top:3px solid #a855f7">
+            <div class="card-name" style="color:#a855f7">AI's Picks</div>
+            <div class="card-return" style="color:#4ade80">+37.0%</div>
+            <div class="card-detail">$10,000 → $13,701</div>
+            <div class="card-alpha">Alpha: +17.5%</div>
+        </div>
+        <div class="summary-card" style="border-top:3px solid #4ade80">
+            <div class="card-name" style="color:#4ade80">S&P 500</div>
+            <div class="card-return" style="color:#4ade80">+19.5%</div>
+            <div class="card-detail">$10,000 → $11,949</div>
+            <div class="card-alpha">Alpha: —</div>
+        </div></div>
+  </div>
+
+  <!-- PORTFOLIO BREAKDOWN -->
+  <div class="section">
+    <h2>Portfolio Breakdown</h2>
+    <p class="section-desc">Individual stock returns within each portfolio</p>
+    <div class="portfolios-grid">
+        <div class="portfolio-card">
+            <h3 style="color:#ff6b6b">The Crowd</h3>
+            <div class="portfolio-stats">
+                <span>Return: <b>+39.8%</b></span>
+                <span>Alpha: <b>+20.3%</b></span>
+                <span>Max DD: <b>-19.4%</b></span>
+                <span>Sharpe: <b>1.28</b></span>
+            </div>
+            <table class="data-table">
+                <thead><tr><th>Ticker</th><th>Entry</th><th>Current</th><th>Return</th></tr></thead>
+                <tbody><tr>
+                <td style="font-weight:600">AMAT</td>
+                <td>$150.78</td>
+                <td>$375.38</td>
+                <td style="color:#4ade80;font-weight:700">+149.0%</td>
+            </tr><tr>
+                <td style="font-weight:600">AMD</td>
+                <td>$98.23</td>
+                <td>$200.15</td>
+                <td style="color:#4ade80;font-weight:700">+103.8%</td>
+            </tr><tr>
+                <td style="font-weight:600">FSLR</td>
+                <td>$127.63</td>
+                <td>$241.88</td>
+                <td style="color:#4ade80;font-weight:700">+89.5%</td>
+            </tr><tr>
+                <td style="font-weight:600">GOOGL</td>
+                <td>$166.36</td>
+                <td>$314.98</td>
+                <td style="color:#4ade80;font-weight:700">+89.3%</td>
+            </tr><tr>
+                <td style="font-weight:600">BABA</td>
+                <td>$128.64</td>
+                <td>$154.45</td>
+                <td style="color:#4ade80;font-weight:700">+20.1%</td>
+            </tr><tr>
+                <td style="font-weight:600">OXY</td>
+                <td>$45.45</td>
+                <td>$51.84</td>
+                <td style="color:#4ade80;font-weight:700">+14.1%</td>
+            </tr><tr>
+                <td style="font-weight:600">META</td>
+                <td>$652.99</td>
+                <td>$655.66</td>
+                <td style="color:#4ade80;font-weight:700">+0.4%</td>
+            </tr><tr>
+                <td style="font-weight:600">UBER</td>
+                <td>$74.44</td>
+                <td>$73.86</td>
+                <td style="color:#ff6b6b;font-weight:700">-0.8%</td>
+            </tr><tr>
+                <td style="font-weight:600">LNTH</td>
+                <td>$94.86</td>
+                <td>$73.87</td>
+                <td style="color:#ff6b6b;font-weight:700">-22.1%</td>
+            </tr><tr>
+                <td style="font-weight:600">NVO</td>
+                <td>$86.97</td>
+                <td>$47.42</td>
+                <td style="color:#ff6b6b;font-weight:700">-45.5%</td>
+            </tr></tbody>
+            </table>
+        </div>
+        <div class="portfolio-card">
+            <h3 style="color:#ffd93d">The Underdogs</h3>
+            <div class="portfolio-stats">
+                <span>Return: <b>+10.4%</b></span>
+                <span>Alpha: <b>-9.1%</b></span>
+                <span>Max DD: <b>-17.6%</b></span>
+                <span>Sharpe: <b>0.42</b></span>
+            </div>
+            <table class="data-table">
+                <thead><tr><th>Ticker</th><th>Entry</th><th>Current</th><th>Return</th></tr></thead>
+                <tbody><tr>
+                <td style="font-weight:600">EWW</td>
+                <td>$48.04</td>
+                <td>$81.23</td>
+                <td style="color:#4ade80;font-weight:700">+69.1%</td>
+            </tr><tr>
+                <td style="font-weight:600">JNJ</td>
+                <td>$163.61</td>
+                <td>$242.49</td>
+                <td style="color:#4ade80;font-weight:700">+48.2%</td>
+            </tr><tr>
+                <td style="font-weight:600">TCNNF</td>
+                <td>$4.25</td>
+                <td>$6.22</td>
+                <td style="color:#4ade80;font-weight:700">+46.4%</td>
+            </tr><tr>
+                <td style="font-weight:600">BCE</td>
+                <td>$21.82</td>
+                <td>$25.80</td>
+                <td style="color:#4ade80;font-weight:700">+18.2%</td>
+            </tr><tr>
+                <td style="font-weight:600">KO</td>
+                <td>$70.25</td>
+                <td>$79.84</td>
+                <td style="color:#4ade80;font-weight:700">+13.7%</td>
+            </tr><tr>
+                <td style="font-weight:600">SIRI</td>
+                <td>$22.86</td>
+                <td>$21.06</td>
+                <td style="color:#ff6b6b;font-weight:700">-7.9%</td>
+            </tr><tr>
+                <td style="font-weight:600">GTBIF</td>
+                <td>$7.03</td>
+                <td>$6.30</td>
+                <td style="color:#ff6b6b;font-weight:700">-10.4%</td>
+            </tr><tr>
+                <td style="font-weight:600">CAVA</td>
+                <td>$87.65</td>
+                <td>$70.11</td>
+                <td style="color:#ff6b6b;font-weight:700">-20.0%</td>
+            </tr><tr>
+                <td style="font-weight:600">GIS</td>
+                <td>$59.11</td>
+                <td>$44.62</td>
+                <td style="color:#ff6b6b;font-weight:700">-24.5%</td>
+            </tr><tr>
+                <td style="font-weight:600">KSPI</td>
+                <td>$103.10</td>
+                <td>$73.20</td>
+                <td style="color:#ff6b6b;font-weight:700">-29.0%</td>
+            </tr></tbody>
+            </table>
+        </div>
+        <div class="portfolio-card">
+            <h3 style="color:#a855f7">AI's Picks</h3>
+            <div class="portfolio-stats">
+                <span>Return: <b>+37.0%</b></span>
+                <span>Alpha: <b>+17.5%</b></span>
+                <span>Max DD: <b>-18.4%</b></span>
+                <span>Sharpe: <b>1.22</b></span>
+            </div>
+            <table class="data-table">
+                <thead><tr><th>Ticker</th><th>Entry</th><th>Current</th><th>Return</th></tr></thead>
+                <tbody><tr>
+                <td style="font-weight:600">BTG</td>
+                <td>$2.65</td>
+                <td>$5.39</td>
+                <td style="color:#4ade80;font-weight:700">+103.7%</td>
+            </tr><tr>
+                <td style="font-weight:600">FSLR</td>
+                <td>$127.63</td>
+                <td>$241.88</td>
+                <td style="color:#4ade80;font-weight:700">+89.5%</td>
+            </tr><tr>
+                <td style="font-weight:600">MRNA</td>
+                <td>$30.27</td>
+                <td>$49.87</td>
+                <td style="color:#4ade80;font-weight:700">+64.8%</td>
+            </tr><tr>
+                <td style="font-weight:600">HOOD</td>
+                <td>$46.89</td>
+                <td>$76.11</td>
+                <td style="color:#4ade80;font-weight:700">+62.3%</td>
+            </tr><tr>
+                <td style="font-weight:600">MRK</td>
+                <td>$89.77</td>
+                <td>$122.26</td>
+                <td style="color:#4ade80;font-weight:700">+36.2%</td>
+            </tr><tr>
+                <td style="font-weight:600">LLY</td>
+                <td>$922.89</td>
+                <td>$1009.52</td>
+                <td style="color:#4ade80;font-weight:700">+9.4%</td>
+            </tr><tr>
+                <td style="font-weight:600">PFE</td>
+                <td>$24.47</td>
+                <td>$26.65</td>
+                <td style="color:#4ade80;font-weight:700">+8.9%</td>
+            </tr><tr>
+                <td style="font-weight:600">MDT</td>
+                <td>$92.09</td>
+                <td>$96.86</td>
+                <td style="color:#4ade80;font-weight:700">+5.2%</td>
+            </tr><tr>
+                <td style="font-weight:600">AMZN</td>
+                <td>$205.02</td>
+                <td>$210.11</td>
+                <td style="color:#4ade80;font-weight:700">+2.5%</td>
+            </tr><tr>
+                <td style="font-weight:600">OSCR</td>
+                <td>$15.09</td>
+                <td>$13.23</td>
+                <td style="color:#ff6b6b;font-weight:700">-12.3%</td>
+            </tr></tbody>
+            </table>
+        </div></div>
+  </div>
+
+  <!-- AI SCORING -->
+  <div class="section">
+    <h2>The AI Scoring</h2>
+    <p class="section-desc">Every recommendation scored blind — no knowledge of outcomes. Five dimensions: thesis clarity, risk awareness, data usage, specificity, independent thinking.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:30px">
+      <div class="hist-container">
+        <h3 style="font-size:1em;margin-bottom:15px;color:var(--text-muted)">Score Distribution</h3>
+        <canvas id="histChart" height="250"></canvas>
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:center;gap:15px">
+        <div class="insight" style="margin:0;padding:20px">
+          <div class="insight-stat" style="font-size:2em">23.7/100</div>
+          <div class="insight-label" style="font-size:0.9em">Average AI Score</div>
+        </div>
+        <div class="insight" style="margin:0;padding:20px">
+          <div class="insight-stat" style="font-size:2em">39</div>
+          <div class="insight-label" style="font-size:0.9em">of 547 scored 60+ (quality reasoning)</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.1em;margin-bottom:15px">Example Comparisons</h3>
+    <div class="examples-grid">
+        <div class="example-card" style="border-left:4px solid #ff6b6b">
+            <div class="example-label">Most Upvoted (418 pts)</div>
+            <div class="example-meta">GOOGL &bull; 418 upvotes &bull; AI Score: <span class="badge badge-low">10</span></div>
+            <div class="example-body">"HOLY SHIT!!!
+
+It's down to prices not seen for 3 whole weeks!!!
+
+BUY BUY BUY!!!"</div>
+            <div class="example-explanation">Pure meme comment with no investment thesis, just emotional 'BUY BUY BUY' and a reference to a 3-week price movement. No substantive reasoning whatsoever.</div>
+        </div>
+        <div class="example-card" style="border-left:4px solid #a855f7">
+            <div class="example-label">Highest AI Score (86)</div>
+            <div class="example-meta">LLY &bull; 12 upvotes &bull; AI Score: <span class="badge badge-high">86</span></div>
+            <div class="example-body">"LLY and NVO are effectively a duopoly on GLP-1s. The merits of Tirzepatide vs Semaglutide are pretty minimal and tolerance of GI ADRs is far more impactful than which agent has slightly better weight loss at the maximum FDA approved dose. Consequently, most people on a GLP-1 for weight loss tend to ..."</div>
+            <div class="example-explanation">Exceptionally sophisticated pharma and regulatory analysis. Details GLP-1 duopoly, drug efficacy nuances, market dynamics (3rd-party payers, PFS shortages, compounding loopholes). Insider perspective with critical risk assessment. Outstanding reasoning.</div>
+        </div>
+        <div class="example-card" style="border-left:4px solid #ffd93d">
+            <div class="example-label">Best Buried Gem (1 upvote)</div>
+            <div class="example-meta">OSCR &bull; 0 upvotes &bull; AI Score: <span class="badge badge-mid">48</span></div>
+            <div class="example-body">"OSCR. Stock is cheaper because the market is uncertain about the state of the individual market (which was created as part of the affordable care act) however I don't think it's going anywhere."</div>
+            <div class="example-explanation">Explains market uncertainty about ACA individual market, expresses confidence in company's viability despite concerns, shows contrarian thinking. Lacks financial data but demonstrates understanding of regulatory context.</div>
+        </div></div>
+  </div>
+
+  <!-- TOP 20 BY AI -->
+  <div class="section">
+    <h2>Top 20 by AI Reasoning Score</h2>
+    <p class="section-desc">The recommendations AI rated highest for argument quality — regardless of upvotes</p>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Ticker</th><th>AI Score</th><th>Upvotes</th><th>AI Explanation</th></tr></thead>
+        <tbody><tr>
+            <td>1</td>
+            <td style="font-weight:600">LLY</td>
+            <td><span class="badge badge-high">86</span></td>
+            <td>12</td>
+            <td class="explanation-cell">Exceptionally sophisticated pharma and regulatory analysis. Details GLP-1 duopoly, drug efficacy nuances, market dynamic...</td>
+        </tr><tr>
+            <td>2</td>
+            <td style="font-weight:600">BTG</td>
+            <td><span class="badge badge-high">80</span></td>
+            <td>1</td>
+            <td class="explanation-cell">Excellent analysis with specific production growth targets (35-45%), valuation thesis (Mali operations underpriced), ris...</td>
+        </tr><tr>
+            <td>3</td>
+            <td style="font-weight:600">SGOL</td>
+            <td><span class="badge badge-high">80</span></td>
+            <td>1</td>
+            <td class="explanation-cell">Excellent analysis with specific production growth targets (35-45%), valuation thesis (Mali operations underpriced), ris...</td>
+        </tr><tr>
+            <td>4</td>
+            <td style="font-weight:600">OSCR</td>
+            <td><span class="badge badge-high">80</span></td>
+            <td>1</td>
+            <td class="explanation-cell">Detailed, contrarian analysis of quarterly healthcare earnings cycles, ACA subsidy cliff timing, ICHRA growth strategy, ...</td>
+        </tr><tr>
+            <td>5</td>
+            <td style="font-weight:600">FSLR</td>
+            <td><span class="badge badge-high">78</span></td>
+            <td>1</td>
+            <td class="explanation-cell">Detailed analysis of First Solar: multi-year backlog, new factories, thin film tech advantage, PE vs legacy energy, debt...</td>
+        </tr><tr>
+            <td>6</td>
+            <td style="font-weight:600">MRNA</td>
+            <td><span class="badge badge-high">78</span></td>
+            <td>1</td>
+            <td class="explanation-cell">Detailed analysis covering Phase 3 pipeline (bird flu, flu-covid combination, cancer vaccines), book value analysis, dis...</td>
+        </tr><tr>
+            <td>7</td>
+            <td style="font-weight:600">MRK</td>
+            <td><span class="badge badge-high">76</span></td>
+            <td>19</td>
+            <td class="explanation-cell">Sophisticated pharma analysis from industry insider. Clear value thesis (low P/E), specific catalysts (readouts, M&A), d...</td>
+        </tr><tr>
+            <td>8</td>
+            <td style="font-weight:600">PFE</td>
+            <td><span class="badge badge-high">76</span></td>
+            <td>19</td>
+            <td class="explanation-cell">Sophisticated pharma analysis with clear value thesis, specific catalysts, and detailed competitive/regulatory risk disc...</td>
+        </tr><tr>
+            <td>9</td>
+            <td style="font-weight:600">MDT</td>
+            <td><span class="badge badge-high">76</span></td>
+            <td>19</td>
+            <td class="explanation-cell">Sophisticated pharma analysis with clear value thesis, specific catalysts, and detailed competitive/regulatory risk disc...</td>
+        </tr><tr>
+            <td>10</td>
+            <td style="font-weight:600">AMZN</td>
+            <td><span class="badge badge-high">74</span></td>
+            <td>1</td>
+            <td class="explanation-cell">Detailed analysis of three positions with specific reasoning: VRT (data center cooling, beat earnings recently, 30% decl...</td>
+        </tr><tr>
+            <td>11</td>
+            <td style="font-weight:600">HOOD</td>
+            <td><span class="badge badge-high">74</span></td>
+            <td>1</td>
+            <td class="explanation-cell">Detailed analysis of three positions with specific reasoning: VRT (data center cooling, beat earnings recently, 30% decl...</td>
+        </tr><tr>
+            <td>12</td>
+            <td style="font-weight:600">VRT</td>
+            <td><span class="badge badge-high">74</span></td>
+            <td>1</td>
+            <td class="explanation-cell">Detailed analysis of three positions with specific reasoning: VRT (data center cooling, beat earnings recently, 30% decl...</td>
+        </tr><tr>
+            <td>13</td>
+            <td style="font-weight:600">TRUL</td>
+            <td><span class="badge badge-high">72</span></td>
+            <td>5</td>
+            <td class="explanation-cell">Clear thesis about cannabis industry structural issues (licensing oversupply, tax penalties). Shows strong risk awarenes...</td>
+        </tr><tr>
+            <td>14</td>
+            <td style="font-weight:600">ATEC</td>
+            <td><span class="badge badge-high">72</span></td>
+            <td>2</td>
+            <td class="explanation-cell">Strong analysis with specific metrics (25% growth, cash flow inflection), historical context (previous dilution at $5), ...</td>
+        </tr><tr>
+            <td>15</td>
+            <td style="font-weight:600">REGN</td>
+            <td><span class="badge badge-high">68</span></td>
+            <td>12</td>
+            <td class="explanation-cell">Directly challenges superficial PE/margin analysis, emphasizing biotech-specific factors (FDA pipeline, patent expiratio...</td>
+        </tr><tr>
+            <td>16</td>
+            <td style="font-weight:600">GTII</td>
+            <td><span class="badge badge-high">68</span></td>
+            <td>5</td>
+            <td class="explanation-cell">Sophisticated analysis of cannabis industry headwinds: black market competition, oversupply, margin pressure, and Sectio...</td>
+        </tr><tr>
+            <td>17</td>
+            <td style="font-weight:600">OXY</td>
+            <td><span class="badge badge-high">66</span></td>
+            <td>9</td>
+            <td class="explanation-cell">Shows independent thinking by critiquing CAP ratios and recounting personal lesson about ROE manipulation by leverage. A...</td>
+        </tr><tr>
+            <td>18</td>
+            <td style="font-weight:600">CI</td>
+            <td><span class="badge badge-high">66</span></td>
+            <td>9</td>
+            <td class="explanation-cell">Same as OXY entry. Shows thoughtful investment methodology and awareness of metric pitfalls. Cites personal portfolio ex...</td>
+        </tr><tr>
+            <td>19</td>
+            <td style="font-weight:600">TNC</td>
+            <td><span class="badge badge-high">66</span></td>
+            <td>4</td>
+            <td class="explanation-cell">Detailed thesis about long-term robotics growth flywheel in niche market (floor scrubbers). Very specific about product ...</td>
+        </tr><tr>
+            <td>20</td>
+            <td style="font-weight:600">APP</td>
+            <td><span class="badge badge-high">66</span></td>
+            <td>1</td>
+            <td class="explanation-cell">Strong contrarian analysis: short seller attack, company response, specific buyback details ($500m increase, $2b total c...</td>
+        </tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ALL RECS -->
+  <div class="section">
+    <h2>All Recommendations (Top 100 by Upvotes)</h2>
+    <p class="section-desc">Full dataset sorted by Reddit upvotes</p>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Ticker</th><th>Upvotes</th><th>AI Score</th><th>Comment</th></tr></thead>
+        <tbody><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>418</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">HOLY SHIT!!!
+
+It's down to prices not seen for 3 whole weeks!!!
+
+BUY BUY BUY!!!</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>198</td>
+            <td><span class="badge badge-low">36</span></td>
+            <td class="body-cell">They said they didn't have capacity to meet Google Cloud demands. Growing 30%.</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>151</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">As repetitive as it is, google lol</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>148</td>
+            <td><span class="badge badge-low">12</span></td>
+            <td class="body-cell">Bought $10000 this morning</td>
+        </tr><tr>
+            <td style="font-weight:600">OXY</td>
+            <td>139</td>
+            <td><span class="badge badge-low">24</span></td>
+            <td class="body-cell">All of this word salad without any discussion of the different types of crude oi...</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>116</td>
+            <td><span class="badge badge-low">28</span></td>
+            <td class="body-cell">Hold Google for Deepmind and Waymo breakthrough programs.</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>104</td>
+            <td><span class="badge badge-low">24</span></td>
+            <td class="body-cell">I'm loading up. GOOG and AMZN are most competition-proof companies.</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>91</td>
+            <td><span class="badge badge-low">12</span></td>
+            <td class="body-cell">Dropped $95k on shares @$190</td>
+        </tr><tr>
+            <td style="font-weight:600">AMD</td>
+            <td>76</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">Right now</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>75</td>
+            <td><span class="badge badge-high">64</span></td>
+            <td class="body-cell">Forward PE is around ~21. Seems like a fairly easy buy, especially considering t...</td>
+        </tr><tr>
+            <td style="font-weight:600">LNTH</td>
+            <td>58</td>
+            <td><span class="badge badge-low">22</span></td>
+            <td class="body-cell">LNTH, GOOG, UBER, AMAT, and FSLR are all undervalued in my opinion. FSLR is defi...</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>58</td>
+            <td><span class="badge badge-low">18</span></td>
+            <td class="body-cell">LNTH, GOOG, UBER, AMAT, and FSLR are all undervalued in my opinion.</td>
+        </tr><tr>
+            <td style="font-weight:600">UBER</td>
+            <td>58</td>
+            <td><span class="badge badge-low">18</span></td>
+            <td class="body-cell">LNTH, GOOG, UBER, AMAT, and FSLR are all undervalued in my opinion.</td>
+        </tr><tr>
+            <td style="font-weight:600">AMAT</td>
+            <td>58</td>
+            <td><span class="badge badge-low">18</span></td>
+            <td class="body-cell">LNTH, GOOG, UBER, AMAT, and FSLR are all undervalued in my opinion.</td>
+        </tr><tr>
+            <td style="font-weight:600">FSLR</td>
+            <td>58</td>
+            <td><span class="badge badge-low">20</span></td>
+            <td class="body-cell">LNTH, GOOG, UBER, AMAT, and FSLR are all undervalued in my opinion.</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>57</td>
+            <td><span class="badge badge-low">32</span></td>
+            <td class="body-cell">Have 130 shares of Google here. Use gcloud on daily basis. Use Google search on ...</td>
+        </tr><tr>
+            <td style="font-weight:600">META</td>
+            <td>51</td>
+            <td><span class="badge badge-mid">40</span></td>
+            <td class="body-cell">META at $90 biggest no-brainer thus far. Still holding most of it. UPWK at $8.XX...</td>
+        </tr><tr>
+            <td style="font-weight:600">BABA</td>
+            <td>51</td>
+            <td><span class="badge badge-low">24</span></td>
+            <td class="body-cell">META at $90 biggest no-brainer thus far. Still holding most of it. UPWK at $8.XX...</td>
+        </tr><tr>
+            <td style="font-weight:600">SPY</td>
+            <td>51</td>
+            <td><span class="badge badge-low">20</span></td>
+            <td class="body-cell">no discount around here</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>49</td>
+            <td><span class="badge badge-low">12</span></td>
+            <td class="body-cell">Buy GOOG now, thank us later</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>41</td>
+            <td><span class="badge badge-low">26</span></td>
+            <td class="body-cell">Google is a good buy at or below $180. I'm loading up…</td>
+        </tr><tr>
+            <td style="font-weight:600">NVDA</td>
+            <td>36</td>
+            <td><span class="badge badge-low">18</span></td>
+            <td class="body-cell">NVDA at $27 cost basis..became my largest holding now</td>
+        </tr><tr>
+            <td style="font-weight:600">SPY</td>
+            <td>36</td>
+            <td><span class="badge badge-low">16</span></td>
+            <td class="body-cell">This correction is just getting started</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>33</td>
+            <td><span class="badge badge-low">36</span></td>
+            <td class="body-cell">Google. We use it for everything from mail to storage to search to office produc...</td>
+        </tr><tr>
+            <td style="font-weight:600">BYD</td>
+            <td>29</td>
+            <td><span class="badge badge-low">24</span></td>
+            <td class="body-cell">I agree, been holding BYD from China for just over a year, got in around 23.60. ...</td>
+        </tr><tr>
+            <td style="font-weight:600">NVO</td>
+            <td>28</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">NVO</td>
+        </tr><tr>
+            <td style="font-weight:600">NVO</td>
+            <td>23</td>
+            <td><span class="badge badge-mid">46</span></td>
+            <td class="body-cell">One of my strongest convictions especially at this valuation. Pe of 30 is histor...</td>
+        </tr><tr>
+            <td style="font-weight:600">UBER</td>
+            <td>22</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">UBER, GOOG</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>22</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">UBER, GOOG</td>
+        </tr><tr>
+            <td style="font-weight:600">CROX</td>
+            <td>21</td>
+            <td><span class="badge badge-mid">44</span></td>
+            <td class="body-cell">CROX cash flows stable, good long term, 30% share buybacks.</td>
+        </tr><tr>
+            <td style="font-weight:600">NBIS</td>
+            <td>21</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">NBIS!</td>
+        </tr><tr>
+            <td style="font-weight:600">BABA</td>
+            <td>21</td>
+            <td><span class="badge badge-low">38</span></td>
+            <td class="body-cell">I have been doing well on Ali Baba and JD. I think Chinese market is truly under...</td>
+        </tr><tr>
+            <td style="font-weight:600">JD</td>
+            <td>21</td>
+            <td><span class="badge badge-low">38</span></td>
+            <td class="body-cell">I have been doing well on Ali Baba and JD. I think Chinese market is truly under...</td>
+        </tr><tr>
+            <td style="font-weight:600">AMD</td>
+            <td>19</td>
+            <td><span class="badge badge-low">36</span></td>
+            <td class="body-cell">AMD undervalued now. Use DCA 25% at a time in downtrend.</td>
+        </tr><tr>
+            <td style="font-weight:600">AMZN</td>
+            <td>19</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">AMZN, BN and GOOG</td>
+        </tr><tr>
+            <td style="font-weight:600">BN</td>
+            <td>19</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">AMZN, BN and GOOG</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>19</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">AMZN, BN and GOOG</td>
+        </tr><tr>
+            <td style="font-weight:600">DPZ</td>
+            <td>19</td>
+            <td><span class="badge badge-mid">46</span></td>
+            <td class="body-cell">I wrote an article on DPZ recently, I think it looks really good for dividend gr...</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>19</td>
+            <td><span class="badge badge-mid">42</span></td>
+            <td class="body-cell">I just think the past 5 years have warped any sense of value. Goog seems cheap r...</td>
+        </tr><tr>
+            <td style="font-weight:600">MRK</td>
+            <td>19</td>
+            <td><span class="badge badge-high">76</span></td>
+            <td class="body-cell">I work in Pharma specifically
+
+For VALUE specifically, not growth, I like Merck,...</td>
+        </tr><tr>
+            <td style="font-weight:600">PFE</td>
+            <td>19</td>
+            <td><span class="badge badge-high">76</span></td>
+            <td class="body-cell">I work in Pharma specifically
+
+For VALUE specifically, not growth, I like Merck,...</td>
+        </tr><tr>
+            <td style="font-weight:600">MDT</td>
+            <td>19</td>
+            <td><span class="badge badge-high">76</span></td>
+            <td class="body-cell">I work in Pharma specifically
+
+For VALUE specifically, not growth, I like Merck,...</td>
+        </tr><tr>
+            <td style="font-weight:600">META</td>
+            <td>17</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">Great analysis</td>
+        </tr><tr>
+            <td style="font-weight:600">NBIS</td>
+            <td>16</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">NBIS baby!!</td>
+        </tr><tr>
+            <td style="font-weight:600">PYPL</td>
+            <td>15</td>
+            <td><span class="badge badge-low">26</span></td>
+            <td class="body-cell">It's value is fair. Certainly a good purchase to pick-up in the overpriced marke...</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>15</td>
+            <td><span class="badge badge-mid">44</span></td>
+            <td class="body-cell">Yes I have 3x 150C LEAPS. I spend more on Google than any other Mag7. Their AI p...</td>
+        </tr><tr>
+            <td style="font-weight:600">CELH</td>
+            <td>15</td>
+            <td><span class="badge badge-mid">42</span></td>
+            <td class="body-cell">I am so bullish on CELH. Celsius is #3 in market share behind Redbull and Monste...</td>
+        </tr><tr>
+            <td style="font-weight:600">V</td>
+            <td>15</td>
+            <td><span class="badge badge-low">20</span></td>
+            <td class="body-cell">Visa and Mastercard transaction network</td>
+        </tr><tr>
+            <td style="font-weight:600">MA</td>
+            <td>15</td>
+            <td><span class="badge badge-low">20</span></td>
+            <td class="body-cell">Visa and Mastercard transaction network</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>14</td>
+            <td><span class="badge badge-mid">50</span></td>
+            <td class="body-cell">The PE ratio is officially at about 24. Based on their guidance and what they ha...</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>14</td>
+            <td><span class="badge badge-low">12</span></td>
+            <td class="body-cell">I buy google with every cash i can get my hands on right now!</td>
+        </tr><tr>
+            <td style="font-weight:600">CROX</td>
+            <td>13</td>
+            <td><span class="badge badge-low">24</span></td>
+            <td class="body-cell">Crox is dear to my heart, ridden its ups and downs for great effect.</td>
+        </tr><tr>
+            <td style="font-weight:600">BIDU</td>
+            <td>13</td>
+            <td><span class="badge badge-high">62</span></td>
+            <td class="body-cell">Unless you give a price that you think it is actually worth, this analysis is la...</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>13</td>
+            <td><span class="badge badge-mid">58</span></td>
+            <td class="body-cell">a DCF or a Peter Lynch fair value calculation gives you anywhere between 15-20% ...</td>
+        </tr><tr>
+            <td style="font-weight:600">LLY</td>
+            <td>12</td>
+            <td><span class="badge badge-high">86</span></td>
+            <td class="body-cell">LLY and NVO are effectively a duopoly on GLP-1s. The merits of Tirzepatide vs Se...</td>
+        </tr><tr>
+            <td style="font-weight:600">REGN</td>
+            <td>12</td>
+            <td><span class="badge badge-high">68</span></td>
+            <td class="body-cell">You need to do way more research than PE, profit margin, and growth for a biotec...</td>
+        </tr><tr>
+            <td style="font-weight:600">AMD</td>
+            <td>11</td>
+            <td><span class="badge badge-low">26</span></td>
+            <td class="body-cell">AMD - This is the best value of the 3. They are one hell of a company trading at...</td>
+        </tr><tr>
+            <td style="font-weight:600">NVDA</td>
+            <td>11</td>
+            <td><span class="badge badge-low">22</span></td>
+            <td class="body-cell">NVDA - fantastic company to buy and hold and DCA for the next 5 years.</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>11</td>
+            <td><span class="badge badge-low">12</span></td>
+            <td class="body-cell">220 shares @ 189.70</td>
+        </tr><tr>
+            <td style="font-weight:600">BRK.B</td>
+            <td>11</td>
+            <td><span class="badge badge-low">16</span></td>
+            <td class="body-cell">Berkshire at $170</td>
+        </tr><tr>
+            <td style="font-weight:600">CELH</td>
+            <td>11</td>
+            <td><span class="badge badge-high">64</span></td>
+            <td class="body-cell">I think it's cheap and I think most people here are confused about the business....</td>
+        </tr><tr>
+            <td style="font-weight:600">BABA</td>
+            <td>11</td>
+            <td><span class="badge badge-low">14</span></td>
+            <td class="body-cell">I am kicking myself for kicking the can down the road on BABA. It's been an expe...</td>
+        </tr><tr>
+            <td style="font-weight:600">SMCI</td>
+            <td>11</td>
+            <td><span class="badge badge-low">32</span></td>
+            <td class="body-cell">Smci. Expected to 3-6x (if they file their 10K by Feb 25)</td>
+        </tr><tr>
+            <td style="font-weight:600">DAL</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">52</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">UAL</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">52</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">AAL</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">52</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">FDX</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">52</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">UPS</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">52</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">XPO</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">52</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">UNP</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">56</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">ZIM</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">52</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">WMT</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">50</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">TGT</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">50</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">AMZN</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">50</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">MCD</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">52</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">GM</td>
+            <td>11</td>
+            <td><span class="badge badge-low">20</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">F</td>
+            <td>11</td>
+            <td><span class="badge badge-low">20</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">TSLA</td>
+            <td>11</td>
+            <td><span class="badge badge-low">18</span></td>
+            <td class="body-cell">If oil prices go down, several industries and companies should benefit. Here are...</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>11</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">I bought 15 shares at 180$. It's my only individual company, the rest of the por...</td>
+        </tr><tr>
+            <td style="font-weight:600">MELI</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">56</span></td>
+            <td class="body-cell">Companies with high growth will always be expensive. However, showing net income...</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>11</td>
+            <td><span class="badge badge-mid">42</span></td>
+            <td class="body-cell">A PE ratio of 23 for a company that grows &gt;10% every year and a good moats sound...</td>
+        </tr><tr>
+            <td style="font-weight:600">ACGL</td>
+            <td>10</td>
+            <td><span class="badge badge-high">62</span></td>
+            <td class="body-cell">\- Insurances companies like ACGL are largely insulated from direct tariff impac...</td>
+        </tr><tr>
+            <td style="font-weight:600">VLO</td>
+            <td>10</td>
+            <td><span class="badge badge-high">62</span></td>
+            <td class="body-cell">\- Insurances companies like ACGL are largely insulated from direct tariff impac...</td>
+        </tr><tr>
+            <td style="font-weight:600">AMR</td>
+            <td>10</td>
+            <td><span class="badge badge-high">62</span></td>
+            <td class="body-cell">\- Insurances companies like ACGL are largely insulated from direct tariff impac...</td>
+        </tr><tr>
+            <td style="font-weight:600">HIMS</td>
+            <td>10</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">Great write up!
+I am long on Hims. $16 avg. With such amazing growth, and such a...</td>
+        </tr><tr>
+            <td style="font-weight:600">RDDT</td>
+            <td>10</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">RDDT at $40</td>
+        </tr><tr>
+            <td style="font-weight:600">UNH</td>
+            <td>10</td>
+            <td><span class="badge badge-low">30</span></td>
+            <td class="body-cell">As long as I know exactly what I'm investing in—for example, the heavyweights of...</td>
+        </tr><tr>
+            <td style="font-weight:600">BABA</td>
+            <td>10</td>
+            <td><span class="badge badge-low">30</span></td>
+            <td class="body-cell">As long as I know exactly what I'm investing in—for example, the heavyweights of...</td>
+        </tr><tr>
+            <td style="font-weight:600">NSRGY</td>
+            <td>10</td>
+            <td><span class="badge badge-low">30</span></td>
+            <td class="body-cell">As long as I know exactly what I'm investing in—for example, the heavyweights of...</td>
+        </tr><tr>
+            <td style="font-weight:600">OXY</td>
+            <td>9</td>
+            <td><span class="badge badge-high">66</span></td>
+            <td class="body-cell">This is a solid framework for categorizing undervalued stocks—your CAP:INCOME an...</td>
+        </tr><tr>
+            <td style="font-weight:600">CI</td>
+            <td>9</td>
+            <td><span class="badge badge-high">66</span></td>
+            <td class="body-cell">This is a solid framework for categorizing undervalued stocks—your CAP:INCOME an...</td>
+        </tr><tr>
+            <td style="font-weight:600">WMT</td>
+            <td>9</td>
+            <td><span class="badge badge-low">38</span></td>
+            <td class="body-cell">You have to decide its value, it also depends on your time horizon and what pric...</td>
+        </tr><tr>
+            <td style="font-weight:600">COST</td>
+            <td>9</td>
+            <td><span class="badge badge-low">38</span></td>
+            <td class="body-cell">You have to decide its value, it also depends on your time horizon and what pric...</td>
+        </tr><tr>
+            <td style="font-weight:600">AMD</td>
+            <td>9</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">90</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>9</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">Because I had prayed for its price to come down a bit so that I can buy.</td>
+        </tr><tr>
+            <td style="font-weight:600">MSFT</td>
+            <td>9</td>
+            <td><span class="badge badge-low">12</span></td>
+            <td class="body-cell">MSFT at 275 first after their 2022 Jan earnings. Then mroe at 250ish later.</td>
+        </tr><tr>
+            <td style="font-weight:600">TECK</td>
+            <td>9</td>
+            <td><span class="badge badge-low">12</span></td>
+            <td class="body-cell">TECK at 30 and all the way till 60. Sold out.</td>
+        </tr><tr>
+            <td style="font-weight:600">CHUB</td>
+            <td>9</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">CHUB sometime in 2021 and sold I don't remember when but it was profitable trade...</td>
+        </tr><tr>
+            <td style="font-weight:600">NVO</td>
+            <td>9</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">NVO, GOOG, MU</td>
+        </tr><tr>
+            <td style="font-weight:600">GOOGL</td>
+            <td>9</td>
+            <td><span class="badge badge-low">10</span></td>
+            <td class="body-cell">NVO, GOOG, MU</td>
+        </tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- METHODOLOGY -->
+  <div class="section">
+    <h2>Methodology</h2>
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:25px;font-size:0.9em;color:var(--text-muted)">
+      <ul style="list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <li><b style="color:var(--text)">Source:</b> r/ValueInvesting, February 2025</li>
+        <li><b style="color:var(--text)">Collection:</b> 541 threads, 6,457 comments</li>
+        <li><b style="color:var(--text)">Entry date:</b> March 3, 2025</li>
+        <li><b style="color:var(--text)">Exit date:</b> 2026-02-20</li>
+        <li><b style="color:var(--text)">Portfolio size:</b> $10,000 equal-weight</li>
+        <li><b style="color:var(--text)">AI model:</b> Claude (Haiku) — blind scoring</li>
+        <li><b style="color:var(--text)">Scoring:</b> 5 dimensions, 1-10 each, composite 10-100</li>
+        <li><b style="color:var(--text)">Costs:</b> No transaction costs modeled</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    Reddit Stock Experiment &bull; Data collected Feb 2025 &bull; Backtested 2025-03-03 to 2026-02-20<br>
+    Built with Claude Code &bull; Not financial advice
+  </div>
+
+</div>
+
+<script>
+// Performance chart removed
+
+// Histogram
+new Chart(document.getElementById('histChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: ['0-9','10-19','20-29','30-39','40-49','50-59','60-69','70-79','80-89','90-100'],
+    datasets: [{
+      data: [0,315,78,45,39,31,25,10,4,0],
+      backgroundColor: [
+        '#ff6b6b','#ff6b6b','#ff6b6b','#ff6b6b',
+        '#ffd93d','#ffd93d',
+        '#4ade80','#4ade80','#4ade80','#4ade80'
+      ],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: '#555', font: { size: 10 } }, grid: { display: false } },
+      y: { ticks: { color: '#555' }, grid: { color: '#1a1a2e' } }
+    }
+  }
+});
+</script>
+</body>
+</html>

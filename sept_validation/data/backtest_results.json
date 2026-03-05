@@ -1,0 +1,193 @@
+{
+  "entry_date": "2025-10-01",
+  "exit_date": "2026-02-24",
+  "spy_return": 2.39,
+  "portfolios": {
+    "crowd": {
+      "name": "The Crowd (Top 10 by upvotes)",
+      "tickers": [
+        "GOOGL",
+        "NVO",
+        "TSLA",
+        "UNH",
+        "LULU",
+        "AMZN",
+        "META",
+        "ADBE",
+        "RDDT",
+        "AAPL"
+      ],
+      "return_pct": -10.84,
+      "valid": 10
+    },
+    "underdogs": {
+      "name": "The Underdogs (Bottom 10)",
+      "tickers": [
+        "SNPS",
+        "RIVN",
+        "RIO",
+        "HOOD",
+        "SBUX",
+        "SFM",
+        "CP",
+        "STZ",
+        "IBM",
+        "ISRG"
+      ],
+      "return_pct": -1.12,
+      "valid": 10
+    },
+    "ai_picks": {
+      "name": "AI's Picks (Top 10 by reasoning)",
+      "tickers": [
+        "NVO",
+        "RDDT",
+        "LLY",
+        "CVS",
+        "ASML",
+        "AAPL",
+        "CMG",
+        "WM",
+        "GOOGL"
+      ],
+      "return_pct": 5.25,
+      "valid": 9
+    },
+    "spy": {
+      "name": "S&P 500 (SPY)",
+      "return_pct": 2.39
+    }
+  },
+  "individual_returns": {
+    "ADBE": {
+      "entry_price": 343.72,
+      "exit_price": 246.68,
+      "return_pct": -28.23
+    },
+    "RDDT": {
+      "entry_price": 202.6,
+      "exit_price": 142.46,
+      "return_pct": -29.68
+    },
+    "ASML": {
+      "entry_price": 1000.17,
+      "exit_price": 1485.99,
+      "return_pct": 48.57
+    },
+    "RIVN": {
+      "entry_price": 14.61,
+      "exit_price": 14.96,
+      "return_pct": 2.4
+    },
+    "LULU": {
+      "entry_price": 177.57,
+      "exit_price": 178.11,
+      "return_pct": 0.3
+    },
+    "WM": {
+      "entry_price": 219.02,
+      "exit_price": 230.56,
+      "return_pct": 5.27
+    },
+    "RIO": {
+      "entry_price": 66.29,
+      "exit_price": 97.67,
+      "return_pct": 47.34
+    },
+    "META": {
+      "entry_price": 716.76,
+      "exit_price": 637.25,
+      "return_pct": -11.09
+    },
+    "LLY": {
+      "entry_price": 822.84,
+      "exit_price": 1058.56,
+      "return_pct": 28.65
+    },
+    "AAPL": {
+      "entry_price": 254.96,
+      "exit_price": 266.18,
+      "return_pct": 4.4
+    },
+    "CP": {
+      "entry_price": 74.83,
+      "exit_price": 84.75,
+      "return_pct": 13.26
+    },
+    "SNPS": {
+      "entry_price": 488.78,
+      "exit_price": 420.82,
+      "return_pct": -13.9
+    },
+    "SPY": {
+      "entry_price": 666.48,
+      "exit_price": 682.39,
+      "return_pct": 2.39
+    },
+    "CVS": {
+      "entry_price": 75.62,
+      "exit_price": 77.0,
+      "return_pct": 1.82
+    },
+    "GOOGL": {
+      "entry_price": 244.74,
+      "exit_price": 311.49,
+      "return_pct": 27.27
+    },
+    "IBM": {
+      "entry_price": 283.3,
+      "exit_price": 223.35,
+      "return_pct": -21.16
+    },
+    "ISRG": {
+      "entry_price": 438.04,
+      "exit_price": 492.1,
+      "return_pct": 12.34
+    },
+    "TSLA": {
+      "entry_price": 459.46,
+      "exit_price": 399.83,
+      "return_pct": -12.98
+    },
+    "SBUX": {
+      "entry_price": 83.26,
+      "exit_price": 94.78,
+      "return_pct": 13.84
+    },
+    "AMZN": {
+      "entry_price": 220.63,
+      "exit_price": 205.27,
+      "return_pct": -6.96
+    },
+    "CMG": {
+      "entry_price": 38.97,
+      "exit_price": 36.61,
+      "return_pct": -6.06
+    },
+    "NVO": {
+      "entry_price": 59.17,
+      "exit_price": 39.63,
+      "return_pct": -33.02
+    },
+    "HOOD": {
+      "entry_price": 139.14,
+      "exit_price": 71.78,
+      "return_pct": -48.41
+    },
+    "SFM": {
+      "entry_price": 107.16,
+      "exit_price": 71.5,
+      "return_pct": -33.28
+    },
+    "STZ": {
+      "entry_price": 136.98,
+      "exit_price": 159.42,
+      "return_pct": 16.38
+    },
+    "UNH": {
+      "entry_price": 345.97,
+      "exit_price": 282.34,
+      "return_pct": -18.39
+    }
+  }
+}
